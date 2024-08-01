@@ -1,8 +1,8 @@
 ---
-import { Home } from "../components/Home.tsx";
-import MainLayout from "../layouts/MainLayout.astro";
+import { Desktop } from "../components/ui/Desktop.tsx";
+import OSLayout from "../layouts/OSLayout.astro";
 ---
 
-<MainLayout>
-	<Home client:only="react"/>
-</MainLayout>
+<OSLayout>
+	<Desktop client:only="react"/>
+</OSLayout>
