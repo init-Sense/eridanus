@@ -1,11 +1,6 @@
 import { type PanInfo, motion } from "framer-motion";
 import { Bird, Grid, type LucideProps, Octagon, Phone } from "lucide-react";
-import type {
-	ForwardRefExoticComponent,
-	ReactElement,
-	ReactNode,
-	RefAttributes,
-} from "react";
+import type { FC, ForwardRefExoticComponent, RefAttributes } from "react";
 import { useEffect, useRef, useState } from "react";
 
 interface Icon {
@@ -36,7 +31,7 @@ const getRandomPosition = (
 	y: Math.random() * (containerHeight - 100),
 });
 
-export const Home: ReactNode = () => {
+export const Home: FC = () => {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
 	const [iconPositions, setIconPositions] = useState<Position[]>([]);
