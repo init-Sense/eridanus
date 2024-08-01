@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { X } from "lucide-react";
-import type { FC, MouseEventHandler, ReactNode } from "react";
+import type { FC, ReactNode } from "react";
 import { useState } from "react";
 
 interface WindowProps {
@@ -37,7 +37,7 @@ export const Window: FC<WindowProps> = ({
 			initial={{ scale: 0.5, opacity: 0 }}
 			animate={{ scale: 1, opacity: 1 }}
 			exit={{ scale: 0.5, opacity: 0 }}
-			onMouseDown={handleMouseDown}
+			onMouseDown={() => handleMouseDown}
 		>
 			<div
 				className="bg-gray-200 px-4 py-2 flex justify-between items-center cursor-move"
