@@ -1,7 +1,7 @@
-import { Bird, CircleDotIcon, Grid, Octagon, Phone } from "lucide-react";
+import { DotIcon } from "lucide-react";
 import type React from "react";
 import { useWindowStore } from "../react-store/window-store.ts";
-import { Projects } from "../utils/projects.ts";
+import { apus, noclip, octant, phony } from "../utils/projects.tsx";
 
 export const Footer: React.FC = () => {
 	const {
@@ -12,26 +12,63 @@ export const Footer: React.FC = () => {
 		toggleWindow,
 	} = useWindowStore();
 
-	const reducedWindows = [
-		{ name: Projects.Noclip, icon: Grid, isReduced: isNoclipReduced },
-		{ name: Projects.Octant, icon: Octagon, isReduced: isOctantReduced },
-		{ name: Projects.Phony, icon: Phone, isReduced: isPhonyReduced },
-		{ name: Projects.Apus, icon: Bird, isReduced: isApusReduced },
-	];
+	const handleKeyDown = (event: React.KeyboardEvent, id: string) => {
+		if (event.key === "Enter" || event.key === " ") {
+			event.preventDefault();
+			toggleWindow(id);
+		}
+	};
 
 	return (
 		<footer className="flex flex-row bg-gray-800 text-white px-2 py-2 gap-4">
-			<CircleDotIcon size={14} />
-			{reducedWindows?.map(
-				(window) =>
-					window.isReduced && (
-						<window.icon
-							key={window.name}
-							size={14}
-							className="cursor-pointer hover:text-blue-400"
-							onClick={() => toggleWindow(window.name)}
-						/>
-					),
+			<DotIcon size={16} />
+			{isNoclipReduced && (
+				<div
+					onClick={() => toggleWindow(noclip.id)}
+					onKeyDown={(e) => handleKeyDown(e, noclip.id)}
+					className="cursor-pointer hover:text-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400"
+					tabIndex={0}
+					role="button"
+					aria-label="Open Noclip"
+				>
+					{noclip.footerIcon}
+				</div>
+			)}
+			{isOctantReduced && (
+				<div
+					onClick={() => toggleWindow(octant.id)}
+					onKeyDown={(e) => handleKeyDown(e, octant.id)}
+					className="cursor-pointer hover:text-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400"
+					tabIndex={0}
+					role="button"
+					aria-label="Open Octant"
+				>
+					{octant.footerIcon}
+				</div>
+			)}
+			{isPhonyReduced && (
+				<div
+					onClick={() => toggleWindow(phony.id)}
+					onKeyDown={(e) => handleKeyDown(e, phony.id)}
+					className="cursor-pointer hover:text-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400"
+					tabIndex={0}
+					role="button"
+					aria-label="Open Phony Game"
+				>
+					{phony.footerIcon}
+				</div>
+			)}
+			{isApusReduced && (
+				<div
+					onClick={() => toggleWindow(apus.id)}
+					onKeyDown={(e) => handleKeyDown(e, apus.id)}
+					className="cursor-pointer hover:text-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400"
+					tabIndex={0}
+					role="button"
+					aria-label="Open Apus"
+				>
+					{apus.footerIcon}
+				</div>
 			)}
 		</footer>
 	);

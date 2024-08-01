@@ -21,6 +21,10 @@ interface WindowState {
 	closeWindow: (window: string) => void;
 }
 
+const capitalizeFirstLetter = (string: string) => {
+	return string.charAt(0).toUpperCase() + string.slice(1);
+};
+
 export const useWindowStore = create<WindowState>()((set) => ({
 	isNoclipOpen: false,
 	isOctantOpen: false,
@@ -40,24 +44,23 @@ export const useWindowStore = create<WindowState>()((set) => ({
 	setIsApusReduced: (state) => set({ isApusReduced: state }),
 	toggleWindow: (window) =>
 		set((state) => {
-			const isOpenKey = `is${window}Open` as keyof WindowState;
-			const isReducedKey = `is${window}Reduced` as keyof WindowState;
+			const capitalizedWindow = capitalizeFirstLetter(window);
+			const isOpenKey = `is${capitalizedWindow}Open` as keyof WindowState;
+			const isReducedKey = `is${capitalizedWindow}Reduced` as keyof WindowState;
 
 			if (state[isReducedKey]) {
-				// If the window is reduced, open it and un-reduce it
 				return {
 					[isOpenKey]: true,
 					[isReducedKey]: false,
 				};
 			}
 			if (state[isOpenKey]) {
-				// If the window is open, reduce it
 				return {
 					[isOpenKey]: false,
 					[isReducedKey]: true,
 				};
 			}
-			// If the window is neither open nor reduced, open it
+
 			return {
 				[isOpenKey]: true,
 				[isReducedKey]: false,
@@ -65,10 +68,10 @@ export const useWindowStore = create<WindowState>()((set) => ({
 		}),
 	closeWindow: (window) =>
 		set((state) => {
-			const isOpenKey = `is${window}Open` as keyof WindowState;
-			const isReducedKey = `is${window}Reduced` as keyof WindowState;
+			const capitalizedWindow = capitalizeFirstLetter(window);
+			const isOpenKey = `is${capitalizedWindow}Open` as keyof WindowState;
+			const isReducedKey = `is${capitalizedWindow}Reduced` as keyof WindowState;
 
-			// Close the window without reducing it
 			return {
 				[isOpenKey]: false,
 				[isReducedKey]: false,

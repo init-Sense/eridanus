@@ -1,8 +1,9 @@
 import { type PanInfo, motion } from "framer-motion";
-import { Bird, Grid, type LucideProps, Octagon, Phone } from "lucide-react";
+import type { LucideProps } from "lucide-react";
 import type { FC, ForwardRefExoticComponent, RefAttributes } from "react";
 import { useEffect, useRef, useState } from "react";
 import { useWindowStore } from "../../react-store/window-store";
+import { type Project, projects } from "../../utils/projects.tsx";
 import { Windows } from "../windows/Windows.tsx";
 
 interface Icon {
@@ -32,22 +33,14 @@ export const Desktop: FC = () => {
 	const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
 	const [iconPositions, setIconPositions] = useState<Position[]>([]);
 	const [isDragging, setIsDragging] = useState(false);
-	const { setIsNoclipOpen, setIsOctantOpen, setIsPhonyOpen, setIsApusOpen } =
-		useWindowStore();
-
-	const icons: Icon[] = [
-		{ id: 1, name: "Noclip", Icon: Grid, setter: setIsNoclipOpen },
-		{ id: 2, name: "Octant", Icon: Octagon, setter: setIsOctantOpen },
-		{ id: 3, name: "Phony", Icon: Phone, setter: setIsPhonyOpen },
-		{ id: 4, name: "Apus", Icon: Bird, setter: setIsApusOpen },
-	];
+	const { toggleWindow } = useWindowStore();
 
 	useEffect(() => {
 		const updateSize = () => {
 			if (containerRef.current) {
 				const { width, height } = containerRef.current.getBoundingClientRect();
 				setContainerSize({ width, height });
-				setIconPositions(icons.map(() => getRandomPosition(width, height)));
+				setIconPositions(projects.map(() => getRandomPosition(width, height)));
 			}
 		};
 
@@ -74,9 +67,9 @@ export const Desktop: FC = () => {
 		});
 	};
 
-	const handleIconClick = (icon: Icon) => {
+	const handleIconClick = (project: Project) => {
 		if (!isDragging) {
-			icon.setter(true);
+			toggleWindow(project.id);
 		}
 	};
 
@@ -85,9 +78,9 @@ export const Desktop: FC = () => {
 			ref={containerRef}
 			className="relative w-full h-full bg-blue-100 overflow-hidden"
 		>
-			{icons.map((icon, index) => (
+			{projects.map((project, index) => (
 				<motion.div
-					key={icon.id}
+					key={project.id}
 					className={`absolute flex flex-col items-center justify-center w-20 h-20 ${
 						isDragging ? "cursor-move" : "hover:cursor-pointer"
 					}`}
@@ -98,12 +91,10 @@ export const Desktop: FC = () => {
 					dragConstraints={containerRef}
 					onDragStart={onDragStart}
 					onDragEnd={(event, info) => onDragEnd(event, info, index)}
-					onClick={() => handleIconClick(icon)}
+					onClick={() => handleIconClick(project)}
 				>
-					<icon.Icon className="w-8 h-8 text-blue-600" />
-					<span className="mt-1 text-xs text-center text-gray-700">
-						{icon.name}
-					</span>
+					{project.desktopIcon}
+					<p className="text-xs">{project.title}</p>
 				</motion.div>
 			))}
 			<Windows />
