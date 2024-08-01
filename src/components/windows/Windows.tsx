@@ -14,10 +14,10 @@ export const Windows = () => {
 	const [highestZIndex, setHighestZIndex] = useState(0);
 
 	const {
-		isNoclipOpen,
-		isOctantOpen,
-		isPhonyOpen,
-		isApusOpen,
+		noclip: { isOpen: isNoclipOpen },
+		octant: { isOpen: isOctantOpen },
+		phony: { isOpen: isPhonyOpen },
+		apus: { isOpen: isApusOpen },
 		toggleWindow,
 		closeWindow,
 	} = useWindowStore();

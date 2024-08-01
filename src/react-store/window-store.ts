@@ -1,80 +1,68 @@
 import { create } from "zustand";
 
+interface ProjectWindowState {
+	isOpen: boolean;
+	isReduced: boolean;
+}
+
+interface ProjectState extends ProjectWindowState {
+	setIsOpen: (state: boolean) => void;
+	setIsReduced: (state: boolean) => void;
+}
+
 interface WindowState {
-	isNoclipOpen: boolean;
-	isOctantOpen: boolean;
-	isPhonyOpen: boolean;
-	isApusOpen: boolean;
-	isNoclipReduced: boolean;
-	isOctantReduced: boolean;
-	isPhonyReduced: boolean;
-	isApusReduced: boolean;
-	setIsNoclipOpen: (state: boolean) => void;
-	setIsOctantOpen: (state: boolean) => void;
-	setIsPhonyOpen: (state: boolean) => void;
-	setIsApusOpen: (state: boolean) => void;
-	setIsNoclipReduced: (state: boolean) => void;
-	setIsOctantReduced: (state: boolean) => void;
-	setIsPhonyReduced: (state: boolean) => void;
-	setIsApusReduced: (state: boolean) => void;
+	noclip: ProjectState;
+	octant: ProjectState;
+	phony: ProjectState;
+	apus: ProjectState;
 	toggleWindow: (window: string) => void;
 	closeWindow: (window: string) => void;
 }
 
-const capitalizeFirstLetter = (string: string) => {
-	return string.charAt(0).toUpperCase() + string.slice(1);
-};
+const createProjectSlice = (set: any) => ({
+	isOpen: false,
+	isReduced: false,
+	setIsOpen: (state: boolean) => set({ isOpen: state }),
+	setIsReduced: (state: boolean) => set({ isReduced: state }),
+});
 
 export const useWindowStore = create<WindowState>()((set) => ({
-	isNoclipOpen: false,
-	isOctantOpen: false,
-	isPhonyOpen: false,
-	isApusOpen: false,
-	isNoclipReduced: false,
-	isOctantReduced: false,
-	isPhonyReduced: false,
-	isApusReduced: false,
-	setIsNoclipOpen: (state) => set({ isNoclipOpen: state }),
-	setIsOctantOpen: (state) => set({ isOctantOpen: state }),
-	setIsPhonyOpen: (state) => set({ isPhonyOpen: state }),
-	setIsApusOpen: (state) => set({ isApusOpen: state }),
-	setIsNoclipReduced: (state) => set({ isNoclipReduced: state }),
-	setIsOctantReduced: (state) => set({ isOctantReduced: state }),
-	setIsPhonyReduced: (state) => set({ isPhonyReduced: state }),
-	setIsApusReduced: (state) => set({ isApusReduced: state }),
-	toggleWindow: (window) =>
-		set((state) => {
-			const capitalizedWindow = capitalizeFirstLetter(window);
-			const isOpenKey = `is${capitalizedWindow}Open` as keyof WindowState;
-			const isReducedKey = `is${capitalizedWindow}Reduced` as keyof WindowState;
+	noclip: createProjectSlice((state: ProjectWindowState) =>
+		set((prevState: WindowState) => ({
+			noclip: { ...prevState.noclip, ...state },
+		})),
+	),
+	octant: createProjectSlice((state: ProjectWindowState) =>
+		set((prevState: WindowState) => ({
+			octant: { ...prevState.octant, ...state },
+		})),
+	),
+	phony: createProjectSlice((state: ProjectWindowState) =>
+		set((prevState: WindowState) => ({
+			phony: { ...prevState.phony, ...state },
+		})),
+	),
+	apus: createProjectSlice((state: ProjectWindowState) =>
+		set((prevState: WindowState) => ({
+			apus: { ...prevState.apus, ...state },
+		})),
+	),
 
-			if (state[isReducedKey]) {
-				return {
-					[isOpenKey]: true,
-					[isReducedKey]: false,
-				};
+	toggleWindow: (window: string) =>
+		set((state: WindowState) => {
+			const project = state[window as keyof WindowState] as ProjectState;
+			if (project.isReduced) {
+				return { [window]: { ...project, isOpen: true, isReduced: false } };
 			}
-			if (state[isOpenKey]) {
-				return {
-					[isOpenKey]: false,
-					[isReducedKey]: true,
-				};
+			if (project.isOpen) {
+				return { [window]: { ...project, isOpen: false, isReduced: true } };
 			}
-
-			return {
-				[isOpenKey]: true,
-				[isReducedKey]: false,
-			};
+			return { [window]: { ...project, isOpen: true, isReduced: false } };
 		}),
-	closeWindow: (window) =>
-		set((state) => {
-			const capitalizedWindow = capitalizeFirstLetter(window);
-			const isOpenKey = `is${capitalizedWindow}Open` as keyof WindowState;
-			const isReducedKey = `is${capitalizedWindow}Reduced` as keyof WindowState;
 
-			return {
-				[isOpenKey]: false,
-				[isReducedKey]: false,
-			};
+	closeWindow: (window: string) =>
+		set((state: WindowState) => {
+			const project = state[window as keyof WindowState] as ProjectState;
+			return { [window]: { ...project, isOpen: false, isReduced: false } };
 		}),
 }));

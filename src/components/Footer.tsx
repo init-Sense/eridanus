@@ -5,10 +5,10 @@ import { apus, noclip, octant, phony } from "../utils/projects.tsx";
 
 export const Footer: React.FC = () => {
 	const {
-		isNoclipReduced,
-		isOctantReduced,
-		isPhonyReduced,
-		isApusReduced,
+		noclip: { isReduced: isNoclipReduced },
+		octant: { isReduced: isOctantReduced },
+		phony: { isReduced: isPhonyReduced },
+		apus: { isReduced: isApusReduced },
 		toggleWindow,
 	} = useWindowStore();
 
