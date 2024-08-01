@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Minus, X } from "lucide-react";
 import type { FC, ReactNode } from "react";
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface WindowProps {
 	title: string;
@@ -12,18 +12,26 @@ interface WindowProps {
 	onFocus: () => void;
 	isOpen: boolean;
 	isReducing: boolean;
+	screenSize: { width: number; height: number };
 }
 
 const windowVariants = {
-	open: {
+	open: ({ x, y }: { x: number; y: number }) => ({
 		scale: 1,
 		opacity: 1,
-		y: 0,
-		transition: { type: "spring", stiffness: 300, damping: 30 },
-	},
+		x,
+		y,
+		transition: {
+			type: "spring",
+			stiffness: 300,
+			damping: 30,
+			y: { type: "spring", stiffness: 500, damping: 30 },
+		},
+	}),
 	closedExit: {
 		scale: 0.5,
 		opacity: 0,
+		y: "100%",
 		transition: { duration: 0.2 },
 	},
 	reducedExit: {
@@ -43,14 +51,44 @@ export const Window: FC<WindowProps> = ({
 	onFocus,
 	isOpen,
 	isReducing,
+	screenSize,
 }) => {
 	const [isDragging, setIsDragging] = useState(false);
+	const [position, setPosition] = useState(() => {
+		const centerX = screenSize.width / 2 - 200;
+		const centerY = screenSize.height / 2 - 150;
+		return {
+			x: centerX + (Math.random() - 0.5) * 100,
+			y: centerY + (Math.random() - 0.5) * 100,
+		};
+	});
 
-	const handleMouseDown = (e: React.MouseEvent) => {
-		if (e.target === e.currentTarget) {
-			onFocus();
+	const isInitialMount = useRef(true);
+
+	useEffect(() => {
+		if (isOpen) {
+			if (isInitialMount.current) {
+				onFocus();
+				isInitialMount.current = false;
+			}
+		} else {
+			isInitialMount.current = true;
 		}
-	};
+	}, [isOpen, onFocus]);
+
+	const handleMouseDown = useCallback(
+		(e: React.MouseEvent) => {
+			onFocus();
+			e.stopPropagation();
+		},
+		[onFocus],
+	);
+
+	// TODO: Fix any type
+	const handleDragEnd = useCallback((e: any, info: any) => {
+		setIsDragging(false);
+		setPosition({ x: info.point.x, y: info.point.y });
+	}, []);
 
 	return (
 		<AnimatePresence>
@@ -59,18 +97,28 @@ export const Window: FC<WindowProps> = ({
 					drag
 					dragMomentum={false}
 					onDragStart={() => setIsDragging(true)}
-					onDragEnd={() => setIsDragging(false)}
+					onDragEnd={handleDragEnd}
 					className="absolute bg-white rounded-lg shadow-lg overflow-hidden"
-					style={{ width: "400px", height: "300px", zIndex }}
 					variants={windowVariants}
-					initial="closedExit"
+					custom={position}
+					initial={{
+						...position,
+						y: screenSize.height,
+						opacity: 0,
+						scale: 0.5,
+					}}
 					animate="open"
 					exit={isReducing ? "reducedExit" : "closedExit"}
 					onMouseDown={handleMouseDown}
+					style={{
+						width: "400px",
+						height: "300px",
+						zIndex,
+					}}
 				>
 					<div
 						className="bg-gray-200 px-4 py-2 flex justify-between items-center cursor-move"
-						onMouseDown={onFocus}
+						onMouseDown={handleMouseDown}
 					>
 						<h2 className="text-sm font-semibold">{title}</h2>
 						<div className="flex items-center">
