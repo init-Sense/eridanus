@@ -64,7 +64,7 @@ export const Windows: FC<WindowsProps> = ({ iconPositions }) => {
 							height: window.innerHeight,
 						}}
 					>
-						{project.title}
+						{project.content}
 					</Window>
 				);
 			})}

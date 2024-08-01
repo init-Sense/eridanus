@@ -7,6 +7,7 @@ export type Project = {
 	defaultIcon: ReactElement;
 	desktopIcon?: ReactElement;
 	footerIcon?: ReactElement;
+	content?: ReactElement;
 };
 
 export const noclip: Project = {
@@ -15,6 +16,7 @@ export const noclip: Project = {
 	defaultIcon: <Grid size={16} />,
 	desktopIcon: <Grid size={32} />,
 	footerIcon: <Grid size={16} />,
+	content: <div>Noclip content</div>,
 };
 
 export const octant: Project = {
@@ -23,6 +25,7 @@ export const octant: Project = {
 	defaultIcon: <Octagon size={16} />,
 	desktopIcon: <Octagon size={32} />,
 	footerIcon: <Octagon size={16} />,
+	content: <div>Octant content</div>,
 };
 
 export const phony: Project = {
@@ -31,6 +34,7 @@ export const phony: Project = {
 	defaultIcon: <Phone size={16} />,
 	desktopIcon: <Phone size={32} />,
 	footerIcon: <Phone size={16} />,
+	content: <div>Phony content</div>,
 };
 
 export const apus: Project = {
@@ -39,6 +43,7 @@ export const apus: Project = {
 	defaultIcon: <Bird size={16} />,
 	desktopIcon: <Bird size={32} />,
 	footerIcon: <Bird size={16} />,
+	content: <div>Apus content</div>,
 };
 
 export const projects: Project[] = [noclip, octant, phony, apus];
