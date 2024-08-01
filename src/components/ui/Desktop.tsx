@@ -2,9 +2,8 @@ import { type PanInfo, motion } from "framer-motion";
 import { Bird, Grid, type LucideProps, Octagon, Phone } from "lucide-react";
 import type { FC, ForwardRefExoticComponent, RefAttributes } from "react";
 import { useEffect, useRef, useState } from "react";
-import { useWindowStore } from "../../store/window-store";
-import { Noclip } from "../windows/Noclip";
-import { Window } from "../windows/Window.tsx";
+import { useWindowStore } from "../../react-store/window-store";
+import { Windows } from "../windows/Windows.tsx";
 
 interface Icon {
 	id: number;
@@ -20,11 +19,6 @@ interface Position {
 	y: number;
 }
 
-interface WindowState {
-	id: string;
-	zIndex: number;
-}
-
 const getRandomPosition = (
 	containerWidth: number,
 	containerHeight: number,
@@ -37,23 +31,14 @@ export const Desktop: FC = () => {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
 	const [iconPositions, setIconPositions] = useState<Position[]>([]);
-	const [windowStates, setWindowStates] = useState<WindowState[]>([]);
-	const [highestZIndex, setHighestZIndex] = useState(0);
-	const {
-		isNoclipOpen,
-		setIsNoclipOpen,
-		isOctantOpen,
-		setIsOctantOpen,
-		isPhonyOpen,
-		setIsPhonyOpen,
-		isApusOpen,
-		setIsApusOpen,
-	} = useWindowStore();
+	const [isDragging, setIsDragging] = useState(false);
+	const { setIsNoclipOpen, setIsOctantOpen, setIsPhonyOpen, setIsApusOpen } =
+		useWindowStore();
 
 	const icons: Icon[] = [
 		{ id: 1, name: "Noclip", Icon: Grid, setter: setIsNoclipOpen },
 		{ id: 2, name: "Octant", Icon: Octagon, setter: setIsOctantOpen },
-		{ id: 3, name: "Phony Game", Icon: Phone, setter: setIsPhonyOpen },
+		{ id: 3, name: "Phony", Icon: Phone, setter: setIsPhonyOpen },
 		{ id: 4, name: "Apus", Icon: Bird, setter: setIsApusOpen },
 	];
 
@@ -72,11 +57,16 @@ export const Desktop: FC = () => {
 		return () => window.removeEventListener("resize", updateSize);
 	}, []);
 
+	const onDragStart = () => {
+		setIsDragging(true);
+	};
+
 	const onDragEnd = (
 		event: MouseEvent | TouchEvent | PointerEvent,
 		info: PanInfo,
 		index: number,
 	) => {
+		setIsDragging(false);
 		setIconPositions((prevPositions) => {
 			const newPositions = [...prevPositions];
 			newPositions[index] = { x: info.point.x, y: info.point.y };
@@ -85,21 +75,9 @@ export const Desktop: FC = () => {
 	};
 
 	const handleIconClick = (icon: Icon) => {
-		icon.setter(true);
-		focusWindow(icon.name);
-	};
-
-	const focusWindow = (id: string) => {
-		setHighestZIndex((prev) => prev + 1);
-		setWindowStates((prev) => {
-			const newStates = prev.filter((state) => state.id !== id);
-			return [...newStates, { id, zIndex: highestZIndex + 1 }];
-		});
-	};
-
-	const getWindowZIndex = (id: string) => {
-		const windowState = windowStates.find((state) => state.id === id);
-		return windowState ? windowState.zIndex : 0;
+		if (!isDragging) {
+			icon.setter(true);
+		}
 	};
 
 	return (
@@ -110,12 +88,15 @@ export const Desktop: FC = () => {
 			{icons.map((icon, index) => (
 				<motion.div
 					key={icon.id}
-					className="absolute flex flex-col items-center justify-center w-20 h-20 cursor-move"
+					className={`absolute flex flex-col items-center justify-center w-20 h-20 ${
+						isDragging ? "cursor-move" : "hover:cursor-pointer"
+					}`}
 					initial={iconPositions[index] || { x: 0, y: 0 }}
 					animate={iconPositions[index] || { x: 0, y: 0 }}
 					drag
 					dragMomentum={false}
 					dragConstraints={containerRef}
+					onDragStart={onDragStart}
 					onDragEnd={(event, info) => onDragEnd(event, info, index)}
 					onClick={() => handleIconClick(icon)}
 				>
@@ -125,46 +106,7 @@ export const Desktop: FC = () => {
 					</span>
 				</motion.div>
 			))}
-			{isNoclipOpen && (
-				<Window
-					title="Noclip"
-					onClose={() => setIsNoclipOpen(false)}
-					zIndex={getWindowZIndex("Noclip")}
-					onFocus={() => focusWindow("Noclip")}
-				>
-					<Noclip />
-				</Window>
-			)}
-			{isOctantOpen && (
-				<Window
-					title="Octant"
-					onClose={() => setIsOctantOpen(false)}
-					zIndex={getWindowZIndex("Octant")}
-					onFocus={() => focusWindow("Octant")}
-				>
-					<div>Octant Content</div>
-				</Window>
-			)}
-			{isPhonyOpen && (
-				<Window
-					title="Phony Game"
-					onClose={() => setIsPhonyOpen(false)}
-					zIndex={getWindowZIndex("Phony Game")}
-					onFocus={() => focusWindow("Phony Game")}
-				>
-					<div>Phony Game Content</div>
-				</Window>
-			)}
-			{isApusOpen && (
-				<Window
-					title="Apus"
-					onClose={() => setIsApusOpen(false)}
-					zIndex={getWindowZIndex("Apus")}
-					onFocus={() => focusWindow("Apus")}
-				>
-					<div>Apus Content</div>
-				</Window>
-			)}
+			<Windows />
 		</motion.div>
 	);
 };
