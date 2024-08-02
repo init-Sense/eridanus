@@ -15,10 +15,10 @@ interface Position {
 }
 
 interface WindowsProps {
-	iconPositions: Record<string, Position>;
+	desktopSize: { width: number; height: number };
 }
 
-export const Windows: FC<WindowsProps> = ({ iconPositions }) => {
+export const Windows: FC<WindowsProps> = ({ desktopSize }) => {
 	const [windowStates, setWindowStates] = useState<State[]>([]);
 	const [highestZIndex, setHighestZIndex] = useState(0);
 	const [reducingWindow, setReducingWindow] = useState<string | null>(null);
@@ -58,10 +58,7 @@ export const Windows: FC<WindowsProps> = ({ iconPositions }) => {
 				onFocus={() => focusWindow(project.id)}
 				isOpen={isOpen}
 				isReducing={reducingWindow === project.id}
-				screenSize={{
-					width: window.innerWidth,
-					height: window.innerHeight,
-				}}
+				screenSize={desktopSize}
 			>
 				{project.content}
 			</Window>

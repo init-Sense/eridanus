@@ -94,7 +94,7 @@ export const Desktop: FC = () => {
 					<p className="text-xs">{project.title}</p>
 				</motion.div>
 			))}
-			<Windows iconPositions={iconPositions} />
+			<Windows desktopSize={containerSize} />
 		</motion.div>
 	);
 };

@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { Minus, X } from "lucide-react";
+import { Maximize2, Minimize2, Minus, X } from "lucide-react";
 import type { FC, ReactNode } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -54,9 +54,10 @@ export const Window: FC<WindowProps> = ({
 	screenSize,
 }) => {
 	const [isDragging, setIsDragging] = useState(false);
+	const [isFullScreen, setIsFullScreen] = useState(false);
 	const [position, setPosition] = useState(() => {
-		const centerX = screenSize.width / 2 - 200;
-		const centerY = screenSize.height / 2 - 150;
+		const centerX = window.innerWidth / 2 - 200;
+		const centerY = window.innerHeight / 2 - 150;
 		return {
 			x: centerX + (Math.random() - 0.5) * 100,
 			y: centerY + (Math.random() - 0.5) * 100,
@@ -88,11 +89,15 @@ export const Window: FC<WindowProps> = ({
 		setIsDragging(false);
 	}, []);
 
+	const toggleFullScreen = useCallback(() => {
+		setIsFullScreen(!isFullScreen);
+	}, [isFullScreen]);
+
 	return (
 		<AnimatePresence>
 			{isOpen && (
 				<motion.div
-					drag
+					drag={!isFullScreen}
 					dragMomentum={false}
 					onDragStart={() => setIsDragging(true)}
 					onDragEnd={handleDragEnd}
@@ -101,16 +106,24 @@ export const Window: FC<WindowProps> = ({
 					custom={position}
 					initial={{
 						...position,
-						y: screenSize.height,
+						y: window.innerHeight / 2,
 						opacity: 0,
 						scale: 0.5,
 					}}
-					animate="open"
+					animate={{
+						...windowVariants.open({ x: position.x, y: position.y }),
+						...(isFullScreen
+							? {
+									x: 0,
+									y: 0,
+									width: screenSize.width,
+									height: screenSize.height,
+								}
+							: { width: "400px", height: "300px" }),
+					}}
 					exit={isReducing ? "reducedExit" : "closedExit"}
 					onMouseDown={() => handleMouseDown}
 					style={{
-						width: "400px",
-						height: "300px",
 						zIndex,
 					}}
 				>
@@ -120,6 +133,18 @@ export const Window: FC<WindowProps> = ({
 					>
 						<h2 className="text-sm font-semibold">{title}</h2>
 						<div className="flex items-center">
+							<button
+								type="button"
+								onClick={toggleFullScreen}
+								className="text-gray-500 hover:text-gray-700 mr-2"
+								style={{ pointerEvents: isDragging ? "none" : "auto" }}
+							>
+								{isFullScreen ? (
+									<Minimize2 size={16} />
+								) : (
+									<Maximize2 size={16} />
+								)}
+							</button>
 							<button
 								type="button"
 								onClick={onReduce}
@@ -138,7 +163,9 @@ export const Window: FC<WindowProps> = ({
 							</button>
 						</div>
 					</div>
-					<div className="p-4 h-[calc(100%-40px)] overflow-auto">
+					<div
+						className={`p-4 overflow-auto ${isFullScreen ? "h-[calc(100%-40px)]" : "h-[calc(300px-40px)]"}`}
+					>
 						{children}
 					</div>
 				</motion.div>
