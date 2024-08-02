@@ -84,10 +84,8 @@ export const Window: FC<WindowProps> = ({
 		[onFocus],
 	);
 
-	// TODO: Fix any type
-	const handleDragEnd = useCallback((e: any, info: any) => {
+	const handleDragEnd = useCallback(() => {
 		setIsDragging(false);
-		setPosition({ x: info.point.x, y: info.point.y });
 	}, []);
 
 	return (
