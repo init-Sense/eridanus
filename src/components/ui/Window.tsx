@@ -77,7 +77,7 @@ export const Window: FC<WindowProps> = ({
 	}, [isOpen, onFocus]);
 
 	const handleMouseDown = useCallback(
-		(e: React.MouseEvent) => {
+		(e: MouseEvent) => {
 			onFocus();
 			e.stopPropagation();
 		},
@@ -107,7 +107,7 @@ export const Window: FC<WindowProps> = ({
 					}}
 					animate="open"
 					exit={isReducing ? "reducedExit" : "closedExit"}
-					onMouseDown={handleMouseDown}
+					onMouseDown={() => handleMouseDown}
 					style={{
 						width: "400px",
 						height: "300px",
@@ -116,7 +116,7 @@ export const Window: FC<WindowProps> = ({
 				>
 					<div
 						className="bg-gray-200 px-4 py-2 flex justify-between items-center cursor-move"
-						onMouseDown={handleMouseDown}
+						onMouseDown={() => handleMouseDown}
 					>
 						<h2 className="text-sm font-semibold">{title}</h2>
 						<div className="flex items-center">
