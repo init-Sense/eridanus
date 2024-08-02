@@ -1,9 +1,9 @@
 import { motion } from "framer-motion";
 import { DotIcon } from "lucide-react";
 import type React from "react";
-import { useWindowStore } from "../react-store/window-store.ts";
-import type { Project, ProjectId } from "../react-utils/project-types.ts";
-import { projects } from "../react-utils/projects.tsx";
+import { useWindowStore } from "../../react-store/window-store.ts";
+import type { Project, ProjectId } from "../../react-utils/project-types.ts";
+import { projects } from "../../react-utils/projects.tsx";
 
 export const Footer: React.FC = () => {
 	const { toggleWindowFromFooter } = useWindowStore();

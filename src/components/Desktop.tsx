@@ -1,10 +1,10 @@
 import { type PanInfo, motion } from "framer-motion";
 import type { FC } from "react";
 import { useEffect, useRef, useState } from "react";
-import { useWindowStore } from "../../react-store/window-store";
-import type { Project } from "../../react-utils/project-types.ts";
-import { projects } from "../../react-utils/projects.tsx";
-import { Windows } from "../windows/Windows.tsx";
+import { useWindowStore } from "../react-store/window-store.ts";
+import type { Project } from "../react-utils/project-types.ts";
+import { projects } from "../react-utils/projects.tsx";
+import { Windows } from "./windows/Windows.tsx";
 
 interface Position {
 	x: number;

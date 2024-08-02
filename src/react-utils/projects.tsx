@@ -1,5 +1,5 @@
 import { Bird, Grid, Octagon, Phone } from "lucide-react";
-import { Noclip } from "../components/windows/Noclip.tsx";
+import { Noclip } from "../components/windows/contents/Noclip.tsx";
 import { type Project, ProjectId } from "./project-types.ts";
 
 export const noclip: Project = {
