@@ -2,7 +2,8 @@ import { type PanInfo, motion } from "framer-motion";
 import type { FC } from "react";
 import { useEffect, useRef, useState } from "react";
 import { useWindowStore } from "../../react-store/window-store";
-import { type Project, projects } from "../../utils/projects.tsx";
+import type { Project } from "../../react-utils/project-types.ts";
+import { projects } from "../../react-utils/projects.tsx";
 import { Windows } from "../windows/Windows.tsx";
 
 interface Position {
@@ -25,7 +26,7 @@ export const Desktop: FC = () => {
 		{},
 	);
 	const [isDragging, setIsDragging] = useState(false);
-	const { toggleWindow } = useWindowStore();
+	const { toggleWindow, getWindowState, unReduceWindow } = useWindowStore();
 
 	useEffect(() => {
 		const updateSize = () => {
@@ -60,7 +61,12 @@ export const Desktop: FC = () => {
 
 	const handleIconClick = (project: Project) => {
 		if (!isDragging) {
-			toggleWindow(project.id);
+			const windowState = getWindowState(project.id);
+			if (!windowState.isOpen && !windowState.isReduced) {
+				toggleWindow(project.id);
+			} else if (windowState.isReduced) {
+				unReduceWindow(project.id);
+			}
 		}
 	};
 

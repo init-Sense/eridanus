@@ -1,68 +1,55 @@
 import { create } from "zustand";
+import { ProjectId } from "../react-utils/project-types";
 
-interface ProjectWindowState {
+interface ProjectState {
 	isOpen: boolean;
 	isReduced: boolean;
 }
 
-interface ProjectState extends ProjectWindowState {
-	setIsOpen: (state: boolean) => void;
-	setIsReduced: (state: boolean) => void;
+type ProjectStates = {
+	[K in ProjectId]: ProjectState;
+};
+
+interface WindowStateMethods {
+	toggleWindow: (window: ProjectId) => void;
+	toggleWindowFromFooter: (window: ProjectId) => void;
+	closeWindow: (window: ProjectId) => void;
+	getWindowState: (window: ProjectId) => ProjectState;
+	unReduceWindow: (window: ProjectId) => void;
 }
 
-interface WindowState {
-	noclip: ProjectState;
-	octant: ProjectState;
-	phony: ProjectState;
-	apus: ProjectState;
-	toggleWindow: (window: string) => void;
-	closeWindow: (window: string) => void;
-}
+type WindowState = ProjectStates & WindowStateMethods;
 
-const createProjectSlice = (set: any) => ({
-	isOpen: false,
-	isReduced: false,
-	setIsOpen: (state: boolean) => set({ isOpen: state }),
-	setIsReduced: (state: boolean) => set({ isReduced: state }),
-});
-
-export const useWindowStore = create<WindowState>()((set) => ({
-	noclip: createProjectSlice((state: ProjectWindowState) =>
-		set((prevState: WindowState) => ({
-			noclip: { ...prevState.noclip, ...state },
+export const useWindowStore = create<WindowState>()((set, get) => ({
+	[ProjectId.NOCLIP]: { isOpen: false, isReduced: false },
+	[ProjectId.OCTANT]: { isOpen: false, isReduced: false },
+	[ProjectId.PHONY]: { isOpen: false, isReduced: false },
+	[ProjectId.APUS]: { isOpen: false, isReduced: false },
+	toggleWindow: (window) =>
+		set((state) => ({
+			[window]: {
+				isOpen: !state[window].isReduced && !state[window].isOpen,
+				isReduced: state[window].isOpen,
+			},
 		})),
-	),
-	octant: createProjectSlice((state: ProjectWindowState) =>
-		set((prevState: WindowState) => ({
-			octant: { ...prevState.octant, ...state },
-		})),
-	),
-	phony: createProjectSlice((state: ProjectWindowState) =>
-		set((prevState: WindowState) => ({
-			phony: { ...prevState.phony, ...state },
-		})),
-	),
-	apus: createProjectSlice((state: ProjectWindowState) =>
-		set((prevState: WindowState) => ({
-			apus: { ...prevState.apus, ...state },
-		})),
-	),
-
-	toggleWindow: (window: string) =>
-		set((state: WindowState) => {
-			const project = state[window as keyof WindowState] as ProjectState;
-			if (project.isReduced) {
-				return { [window]: { ...project, isOpen: true, isReduced: false } };
+	toggleWindowFromFooter: (window) =>
+		set((state) => {
+			const currentState = state[window];
+			if (currentState.isOpen) {
+				return { [window]: { isOpen: false, isReduced: true } };
 			}
-			if (project.isOpen) {
-				return { [window]: { ...project, isOpen: false, isReduced: true } };
+			if (currentState.isReduced) {
+				return { [window]: { isOpen: true, isReduced: false } };
 			}
-			return { [window]: { ...project, isOpen: true, isReduced: false } };
+			return { [window]: { isOpen: true, isReduced: false } };
 		}),
-
-	closeWindow: (window: string) =>
-		set((state: WindowState) => {
-			const project = state[window as keyof WindowState] as ProjectState;
-			return { [window]: { ...project, isOpen: false, isReduced: false } };
-		}),
+	closeWindow: (window) =>
+		set((state) => ({
+			[window]: { isOpen: false, isReduced: false },
+		})),
+	getWindowState: (window) => get()[window],
+	unReduceWindow: (window) =>
+		set((state) => ({
+			[window]: { isOpen: true, isReduced: false },
+		})),
 }));

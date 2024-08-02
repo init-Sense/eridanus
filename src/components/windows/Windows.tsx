@@ -1,6 +1,7 @@
 import { type FC, useState } from "react";
 import { useWindowStore } from "../../react-store/window-store.ts";
-import { projects } from "../../utils/projects.tsx";
+import type { ProjectId } from "../../react-utils/project-types.ts";
+import { projects } from "../../react-utils/projects.tsx";
 import { Window } from "../ui/Window.tsx";
 
 interface State {
@@ -37,7 +38,7 @@ export const Windows: FC<WindowsProps> = ({ iconPositions }) => {
 		return windowState ? windowState.zIndex : 0;
 	};
 
-	const handleReduce = (id: string) => {
+	const handleReduce = (id: ProjectId) => {
 		setReducingWindow(id);
 		setTimeout(() => {
 			toggleWindow(id);
@@ -45,29 +46,25 @@ export const Windows: FC<WindowsProps> = ({ iconPositions }) => {
 		}, 150);
 	};
 
-	return (
-		<>
-			{projects.map((project) => {
-				const isOpen = useWindowStore((state) => state[project.id].isOpen);
-				return (
-					<Window
-						key={project.id}
-						title={project.title}
-						onClose={() => closeWindow(project.id)}
-						onReduce={() => handleReduce(project.id)}
-						zIndex={getWindowZIndex(project.id)}
-						onFocus={() => focusWindow(project.id)}
-						isOpen={isOpen}
-						isReducing={reducingWindow === project.id}
-						screenSize={{
-							width: window.innerWidth,
-							height: window.innerHeight,
-						}}
-					>
-						{project.content}
-					</Window>
-				);
-			})}
-		</>
-	);
+	return projects.map((project) => {
+		const isOpen = useWindowStore((state) => state[project.id].isOpen);
+		return (
+			<Window
+				key={project.id}
+				title={project.title}
+				onClose={() => closeWindow(project.id)}
+				onReduce={() => handleReduce(project.id)}
+				zIndex={getWindowZIndex(project.id)}
+				onFocus={() => focusWindow(project.id)}
+				isOpen={isOpen}
+				isReducing={reducingWindow === project.id}
+				screenSize={{
+					width: window.innerWidth,
+					height: window.innerHeight,
+				}}
+			>
+				{project.content}
+			</Window>
+		);
+	});
 };
