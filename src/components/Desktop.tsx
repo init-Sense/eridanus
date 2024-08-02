@@ -73,12 +73,12 @@ export const Desktop: FC = () => {
 	return (
 		<motion.div
 			ref={containerRef}
-			className="relative w-full h-full bg-blue-100 overflow-hidden"
+			className="relative w-full h-full bg-gray-100 shadow-md overflow-hidden rounded-md"
 		>
 			{projects.map((project) => (
 				<motion.div
 					key={project.id}
-					className={`absolute flex flex-col items-center justify-center w-20 h-20 ${
+					className={`absolute flex flex-col items-center justify-center w-20 h-20 opacity-70 hover:opacity-100 ${
 						isDragging ? "cursor-move" : "hover:cursor-pointer"
 					}`}
 					initial={iconPositions[project.id] || { x: 0, y: 0 }}
@@ -89,9 +89,27 @@ export const Desktop: FC = () => {
 					onDragStart={() => setIsDragging(true)}
 					onDragEnd={(event, info) => onDragEnd(event, info, project.id)}
 					onClick={() => handleIconClick(project)}
+					onHoverStart={() => {
+						setIconPositions((prevPositions) => ({
+							...prevPositions,
+							[project.id]: {
+								x: prevPositions[project.id].x,
+								y: prevPositions[project.id].y - 3,
+							},
+						}));
+					}}
+					onHoverEnd={() => {
+						setIconPositions((prevPositions) => ({
+							...prevPositions,
+							[project.id]: {
+								x: prevPositions[project.id].x,
+								y: prevPositions[project.id].y + 3,
+							},
+						}));
+					}}
 				>
 					{project.desktopIcon}
-					<p className="text-xs">{project.title}</p>
+					{project.title}
 				</motion.div>
 			))}
 			<Windows desktopSize={containerSize} />

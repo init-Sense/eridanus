@@ -1,10 +1,10 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Maximize2, Minimize2, Minus, X } from "lucide-react";
-import type { FC, ReactNode } from "react";
+import type { FC, ReactElement, ReactNode } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 interface WindowProps {
-	title: string;
+	title: ReactElement;
 	onClose: () => void;
 	onReduce: () => void;
 	children: ReactNode;
@@ -56,8 +56,8 @@ export const Window: FC<WindowProps> = ({
 	const [isDragging, setIsDragging] = useState(false);
 	const [isFullScreen, setIsFullScreen] = useState(false);
 	const [position, setPosition] = useState(() => {
-		const centerX = window.innerWidth / 2 - 200;
-		const centerY = window.innerHeight / 2 - 150;
+		const centerX = window.innerWidth / 2 - 500;
+		const centerY = window.innerHeight / 2 - 400;
 		return {
 			x: centerX + (Math.random() - 0.5) * 100,
 			y: centerY + (Math.random() - 0.5) * 100,
@@ -78,12 +78,17 @@ export const Window: FC<WindowProps> = ({
 	}, [isOpen, onFocus]);
 
 	const handleMouseDown = useCallback(
-		(e: MouseEvent) => {
+		(e: React.MouseEvent) => {
 			onFocus();
 			e.stopPropagation();
 		},
 		[onFocus],
 	);
+
+	const handleDragStart = useCallback(() => {
+		setIsDragging(true);
+		onFocus();
+	}, [onFocus]);
 
 	const handleDragEnd = useCallback(() => {
 		setIsDragging(false);
@@ -99,7 +104,7 @@ export const Window: FC<WindowProps> = ({
 				<motion.div
 					drag={!isFullScreen}
 					dragMomentum={false}
-					onDragStart={() => setIsDragging(true)}
+					onDragStart={handleDragStart}
 					onDragEnd={handleDragEnd}
 					className="absolute bg-white rounded-lg shadow-lg overflow-hidden"
 					variants={windowVariants}
@@ -119,19 +124,19 @@ export const Window: FC<WindowProps> = ({
 									width: screenSize.width,
 									height: screenSize.height,
 								}
-							: { width: "400px", height: "300px" }),
+							: { width: "800px", height: "600px" }),
 					}}
 					exit={isReducing ? "reducedExit" : "closedExit"}
-					onMouseDown={() => handleMouseDown}
+					onMouseDown={handleMouseDown}
 					style={{
 						zIndex,
 					}}
 				>
 					<div
 						className="bg-gray-200 px-4 py-2 flex justify-between items-center cursor-move"
-						onMouseDown={() => handleMouseDown}
+						onMouseDown={handleMouseDown}
 					>
-						<h2 className="text-sm font-semibold">{title}</h2>
+						{title}
 						<div className="flex items-center">
 							<button
 								type="button"
@@ -164,7 +169,7 @@ export const Window: FC<WindowProps> = ({
 						</div>
 					</div>
 					<div
-						className={`p-4 overflow-auto ${isFullScreen ? "h-[calc(100%-40px)]" : "h-[calc(300px-40px)]"}`}
+						className={`p-4 overflow-auto ${isFullScreen ? "h-[calc(100%-40px)]" : "h-[calc(600px-40px)]"}`}
 					>
 						{children}
 					</div>

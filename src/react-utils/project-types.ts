@@ -9,7 +9,7 @@ export enum ProjectId {
 
 export type Project = {
 	id: ProjectId;
-	title: string;
+	title: ReactElement;
 	defaultIcon: ReactElement;
 	desktopIcon?: ReactElement;
 	footerIcon?: ReactElement;

@@ -20,7 +20,7 @@ export const Footer: React.FC = () => {
 	};
 
 	return (
-		<footer className="flex flex-row bg-gray-800 text-white px-2 py-2 gap-4">
+		<footer className="flex flex-row bg-gray-800 text-white px-2 py-2 gap-4 rounded-b-md">
 			<DotIcon size={16} />
 			{projects.map((project: Project) => {
 				const { isReduced, isOpen } = useWindowStore(

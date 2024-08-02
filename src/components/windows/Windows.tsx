@@ -9,11 +9,6 @@ interface State {
 	zIndex: number;
 }
 
-interface Position {
-	x: number;
-	y: number;
-}
-
 interface WindowsProps {
 	desktopSize: { width: number; height: number };
 }
